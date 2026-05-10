@@ -1,0 +1,80 @@
+# Pre-commit hooks for JEIS — automatically runs on every `git commit`.
+#
+# Install once per clone:
+#     pip install pre-commit
+#     pre-commit install
+#
+# After installation, every commit triggers the hooks below. If any hook
+# fails (secret detected, syntax error, large file), the commit is rejected
+# and the offending file is reported in the terminal.
+#
+# To run all hooks manually against the entire repo (useful before pushing
+# a long-lived branch):
+#     pre-commit run --all-files
+#
+# To skip hooks for a single emergency commit (use sparingly):
+#     git commit --no-verify -m "..."
+
+repos:
+  # -------------------------------------------------------------------
+  # gitleaks — scans every staged change for committed secrets.
+  # Catches: AWS keys, GitHub tokens, Postgres URIs, generic high-entropy
+  # strings, JWT tokens, private keys, and 100+ other common patterns.
+  # -------------------------------------------------------------------
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.18.4
+    hooks:
+      - id: gitleaks
+        name: gitleaks (scan for committed secrets)
+
+  # -------------------------------------------------------------------
+  # General hygiene — file-level checks that catch sloppy commits.
+  # -------------------------------------------------------------------
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.6.0
+    hooks:
+      - id: check-added-large-files
+        args: ["--maxkb=1024"]      # reject files > 1 MB by accident
+      - id: check-merge-conflict      # block "<<<<<<< HEAD" markers
+      - id: check-yaml                # validate yaml syntax (workflow files)
+      - id: check-toml                # validate any pyproject.toml etc
+      - id: check-json                # validate any *.json
+      - id: detect-private-key        # extra defense over gitleaks
+      - id: end-of-file-fixer         # newline at EOF
+      - id: trailing-whitespace
+      - id: mixed-line-ending
+        args: ["--fix=lf"]            # normalise CRLF → LF (Windows-friendly)
+
+  # -------------------------------------------------------------------
+  # ruff — Python linter + formatter. Fast (Rust-based), replaces
+  # flake8 + isort + most of pylint. Auto-fixes safe issues.
+  # -------------------------------------------------------------------
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.5.5
+    hooks:
+      - id: ruff
+        args: [--fix, --exit-non-zero-on-fix]
+      - id: ruff-format
+
+  # -------------------------------------------------------------------
+  # nbstripout — strip notebook outputs before commit so diffs stay
+  # readable and large model output binary blobs never enter git.
+  # -------------------------------------------------------------------
+  - repo: https://github.com/kynan/nbstripout
+    rev: 0.7.1
+    hooks:
+      - id: nbstripout
+        files: \.ipynb$
+
+# Default to running on Python 3.11 to match our runtime
+default_language_version:
+  python: python3.11
+
+# Files to never run hooks on
+exclude: |
+  (?x)^(
+    \.venv/.*|
+    data/raw/.*|
+    data/processed/.*|
+    dashboard/.*\.pbix
+  )$

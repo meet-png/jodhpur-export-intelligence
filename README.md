@@ -138,6 +138,17 @@ jodhpur-export-intelligence/
 └── README.md
 ```
 
+## Security
+
+Brief summary; full policy in [`SECURITY.md`](SECURITY.md).
+
+- **Secrets** live only in `.env` (gitignored). The `.env.example` template is the only env-shaped file in the repo.
+- **Pre-commit hook** (`.pre-commit-config.yaml`) runs [gitleaks](https://github.com/gitleaks/gitleaks) on every commit to catch secret patterns before they reach the remote — install with `pip install pre-commit && pre-commit install`.
+- **Pinned dependencies** in `requirements.txt` — no floating versions that could pull in compromised updates. Dependabot security alerts enabled.
+- **Parameterised SQL only** — no string-interpolated queries anywhere in `src/`.
+- **No PII in scope.** All data sources are public trade statistics.
+- **Vulnerability reports:** see [`SECURITY.md`](SECURITY.md).
+
 ## Acknowledgements & data sources
 
 Real public data only — no scraping that violates any TOS, no proprietary feeds, no company data.
