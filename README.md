@@ -1,6 +1,6 @@
 # Jodhpur Export Intelligence System (JEIS)
 
-> **An end-to-end data analytics platform for Jodhpur's ₹800 Cr+ export cluster — turning gut-feel decisions into data-driven ones.**
+> **An end-to-end data analytics platform for Jodhpur's ₹100 Cr+ export cluster — turning gut-feel decisions into data-driven ones.**
 
 <!-- DASHBOARD SCREENSHOT GOES HERE — replace with real PNG after dashboard is built -->
 <!-- ![JEIS Dashboard](docs/img/dashboard_overview.png) -->
