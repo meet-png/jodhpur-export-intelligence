@@ -26,6 +26,9 @@ repos:
     hooks:
       - id: gitleaks
         name: gitleaks (scan for committed secrets)
+        # Force explicit config path — auto-discovery is unreliable inside
+        # pre-commit's hook env (it runs from a temp working directory).
+        args: ["--config=.gitleaks.toml", "--verbose", "--redact"]
 
   # -------------------------------------------------------------------
   # General hygiene — file-level checks that catch sloppy commits.

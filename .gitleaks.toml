@@ -1,0 +1,92 @@
+# JEIS — custom gitleaks configuration.
+# Extends the gitleaks default ruleset with patterns specific to this
+# project's secret surface (Postgres URIs, Comtrade subscription keys,
+# Supabase service-role JWTs).
+#
+# How gitleaks discovers this file:
+#   gitleaks looks for `.gitleaks.toml` at the repo root automatically.
+#   The pre-commit hook in .pre-commit-config.yaml therefore needs no
+#   extra arguments — it picks this up by convention.
+
+title = "JEIS gitleaks config"
+
+# Inherit all of gitleaks' default rules (AWS, GitHub, Stripe, Slack, ...)
+# and layer ours on top. This is critical — without `useDefault = true`
+# we would lose the built-in ~140 detection rules.
+[extend]
+useDefault = true
+
+# -----------------------------------------------------------------------
+# Custom rules
+# -----------------------------------------------------------------------
+
+# Postgres connection URI with embedded credentials.
+# Matches: postgresql://user:password@host:port/db
+#          postgres://user:password@host/db
+# Does NOT match: postgresql://host (no credentials)
+#                 jdbc:postgresql://... (caught by gitleaks default)
+[[rules]]
+id          = "postgres-connection-uri"
+description = "PostgreSQL connection URI with embedded password"
+# Go RE2 syntax — no need to escape forward slashes.
+regex       = '''postgres(?:ql)?://[^\s:@/]+:[^\s@/]+@[^\s/]+'''
+tags        = ["secret", "postgres", "database", "credentials"]
+# Allow .env.example and docs to contain placeholder URIs without tripping
+[rules.allowlist]
+description = "Allow placeholders in template files"
+regexes     = ['''YOUR-?PASSWORD''', '''placeholder''', '''XXXXXXXXXXXX''']
+paths       = [
+    '''\.env\.example$''',
+    '''SETUP.*\.md$''',
+    '''.*README\.md$''',
+    '''docs/.*\.md$''',
+]
+
+# UN Comtrade Plus subscription key. These are 32-char hex strings
+# associated with the Ocp-Apim-Subscription-Key header.
+[[rules]]
+id          = "comtrade-subscription-key"
+description = "UN Comtrade Plus API subscription key"
+regex       = '''(?i)(?:comtrade[_-]?(?:api[_-]?)?key|ocp[_-]apim[_-]subscription[_-]key)\s*[:=]\s*['"]?([a-f0-9]{32})['"]?'''
+secretGroup = 1
+tags        = ["secret", "api-key", "comtrade"]
+[rules.allowlist]
+regexes = ['''paste_your_real_comtrade_key_here''', '''XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX''']
+
+# Supabase service-role JWT. These start with `eyJ` (base64-encoded JWT
+# header) and are very long (~150+ chars). The anon key is also a JWT
+# but is intended to be public — this rule targets the service-role key
+# which has full DB access.
+[[rules]]
+id          = "supabase-service-role-jwt"
+description = "Supabase service-role JWT (full DB access)"
+regex       = '''eyJ[A-Za-z0-9_-]{20,}\.eyJ[A-Za-z0-9_-]{50,}\.[A-Za-z0-9_-]{40,}'''
+tags        = ["secret", "jwt", "supabase"]
+
+# Gmail App Password — 16-character lowercase letters in groups of 4.
+# Used by GitHub Actions to send pipeline failure alerts.
+[[rules]]
+id          = "gmail-app-password"
+description = "Gmail App Password (16 lowercase chars, optionally space-grouped)"
+regex       = '''(?i)(?:gmail|app|smtp|email)[_-]?password\s*[:=]\s*['"]?([a-z]{4}\s?[a-z]{4}\s?[a-z]{4}\s?[a-z]{4})['"]?'''
+secretGroup = 1
+tags        = ["secret", "gmail", "smtp"]
+[rules.allowlist]
+regexes = ['''your_16_char_app_password''', '''abcdefghijklmnop''']
+
+# -----------------------------------------------------------------------
+# Global allowlist — files that are SUPPOSED to contain secret-shaped
+# placeholders (templates, docs, the gitleaks rules themselves).
+# -----------------------------------------------------------------------
+[allowlist]
+description = "Files allowed to contain placeholder secrets"
+paths = [
+    '''\.gitleaks\.toml$''',           # this file
+    '''\.env\.example$''',
+    '''\.pre-commit-config\.yaml$''',
+    '''SECURITY\.md$''',
+    '''SETUP_CHECKLIST\.md$''',
+    '''docs/.*\.md$''',
+    '''README\.md$''',
+    '''.*test_.*\.py$''',              # test fixtures
+]
