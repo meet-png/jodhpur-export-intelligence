@@ -1,0 +1,102 @@
+# --- Secrets & env ---
+.env
+.env.local
+.env.*.local
+*.pem
+*.key
+secrets/
+config/local.yml
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# --- Virtual envs ---
+.venv/
+venv/
+env/
+ENV/
+
+# --- Jupyter ---
+.ipynb_checkpoints/
+*/.ipynb_checkpoints/*
+profile_default/
+ipython_config.py
+
+# --- Data (we commit only small samples) ---
+# Raw data files are kept locally but a sample committed
+# Comment these out if you want to commit raw data (we don't, by default)
+data/raw/*.json
+data/raw/*.csv
+data/raw/*.xlsx
+data/raw/*.xls
+data/raw/*.pdf
+data/raw/*.parquet
+!data/raw/.gitkeep
+!data/raw/sample_*.csv
+
+# Processed: keep the canonical CSV but exclude large parquets
+data/processed/*.parquet
+!data/processed/.gitkeep
+!data/processed/exports_clean.csv
+!data/processed/rig_count_clean.csv
+
+# --- Logs ---
+logs/
+*.log
+pip-log.txt
+pip-delete-this-directory.txt
+
+# --- Database ---
+*.db
+*.sqlite
+*.sqlite3
+*.dump
+
+# --- IDE ---
+.vscode/
+!.vscode/settings.json
+!.vscode/extensions.json
+.idea/
+*.swp
+*.swo
+*~
+
+# --- OS ---
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# --- Power BI ---
+# Commit .pbix but ignore the cache
+*.pbix.bak
+TempState/
+
+# --- Test / coverage ---
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+
+# --- Great Expectations ---
+gx/uncommitted/
+great_expectations/uncommitted/
