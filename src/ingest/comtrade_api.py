@@ -64,11 +64,15 @@ COMTRADE_BASE_URL = "https://comtradeapi.un.org/data/v1/get/C/M/HS"
 # India's M49 reporter code (https://comtrade.un.org/Data/cache/reporterAreas.json).
 INDIA_REPORTER_CODE = 699
 
-# 0 = "World" — aggregates all destination countries. We pull this and
-# also break out by partner. The "world" call gives us total flows; the
-# partner-specific calls give us country-level breakdown for the
-# segmentation and benchmarking modules.
-WORLD_PARTNER_CODE = 0
+# Per Comtrade Plus docs, the partnerCode parameter defaults to "All" when
+# omitted — returning a breakdown across every destination country. Passing
+# 0 explicitly restricts the response to the single "World" aggregate row,
+# which is what an earlier version of this client did. We learned the hard
+# way (see commit history) that downstream segmentation and benchmarking
+# modules need the per-country breakdown, so we now omit partnerCode by
+# default and only set it for diagnostic single-country probes.
+ALL_PARTNERS = "all"
+WORLD_PARTNER_CODE = 0  # kept as a named constant for diagnostic scripts
 
 # HS codes per PRD §8.1, with one correction discovered during integration:
 #
@@ -232,28 +236,44 @@ def _call_api(
     hs_code: str,
     year: int,
     *,
-    partner_code: int = WORLD_PARTNER_CODE,
+    partner_code: int | str | None = None,
     timeout: float = 30.0,
 ) -> dict:
     """Call the Comtrade Plus monthly endpoint.
 
     Returns the parsed JSON payload. Raises typed exceptions on auth /
     rate-limit / server failures so the caller can react.
+
+    Parameters
+    ----------
+    partner_code
+        ``None`` (default) → all partners broken out per-country (preferred)
+        ``"all"``          → same as None, but explicit
+        ``0``              → only the "World" aggregate row
+        integer like 842   → only that specific partner country (USA)
     """
     params = {
         "freqCode": "M",
         "clCode": "HS",
-        "period": _build_monthly_period(
-            year
-        ),  # YYYYMM,YYYYMM,... — see helper docstring
+        "period": _build_monthly_period(year),  # YYYYMM,YYYYMM,... — see helper
         "reporterCode": str(INDIA_REPORTER_CODE),
-        "partnerCode": str(partner_code),
         "cmdCode": hs_code,
         "flowCode": "X",  # X = exports (M = imports)
-        "maxRecords": "500",  # API default is 500; explicit for clarity
+        # maxRecords default is 500 (which we were hitting!). Comtrade Plus
+        # allows up to 100,000 per call on the free tier — we set it high so
+        # the long-tail partner countries aren't silently truncated.
+        "maxRecords": "100000",
         "format": "JSON",
         "includeDesc": "true",
     }
+    # Only set partnerCode if the caller explicitly restricts it. Omitting
+    # the parameter lets Comtrade default to "All partners", returning a
+    # per-country breakdown — the shape downstream cleaning and segmentation
+    # expect. An earlier version of this client hard-coded partnerCode=0
+    # (World aggregate) and the entire 464-row dataset got correctly stripped
+    # by clean.py as a single-partner aggregate. Documented in commit log.
+    if partner_code is not None and partner_code != ALL_PARTNERS:
+        params["partnerCode"] = str(partner_code)
     headers = {"Ocp-Apim-Subscription-Key": _api_key()}
 
     log.info("GET Comtrade — HS %s, year %d, partner %s", hs_code, year, partner_code)
@@ -306,9 +326,15 @@ def _write_payload(path: Path, payload: dict) -> None:
 
 
 def fetch_one(hs_code: str, year: int, *, dry_run: bool = False) -> FetchResult:
-    """Fetch a single (hs_code, year) pair and persist it to data/raw/."""
+    """Fetch a single (hs_code, year) pair and persist it to data/raw/.
+
+    Pulls per-country breakdown (partnerCode omitted → Comtrade defaults to
+    "All partners"). The earlier World-only pull is recoverable downstream
+    by GROUP BY on the cleaned data.
+    """
     try:
-        payload = _call_api(hs_code, year, partner_code=WORLD_PARTNER_CODE)
+        # partner_code=None → Comtrade returns all partner countries broken out
+        payload = _call_api(hs_code, year, partner_code=None)
     except ComtradeAuthError as exc:
         # Auth failures are fatal — abort the whole run, don't retry per-call.
         log.error("AUTH FAILURE: %s", exc)
