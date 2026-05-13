@@ -1,0 +1,307 @@
+{
+  "started_at": "2026-05-13T20:34:08.075525",
+  "finished_at": "2026-05-13T20:34:08.107880",
+  "parquet_path": "data\\processed\\exports_clean.parquet",
+  "row_count": 12828,
+  "success_count": 20,
+  "failure_count": 0,
+  "overall_success": true,
+  "results": [
+    {
+      "expectation_type": "expect_columns_to_exist",
+      "column": null,
+      "kwargs": {
+        "columns": [
+          "shipment_date",
+          "year",
+          "month",
+          "quarter",
+          "financial_year",
+          "is_peak_season",
+          "hs_code",
+          "hs_desc",
+          "dest_iso_alpha3",
+          "dest_country_name",
+          "fob_usd",
+          "quantity_kg",
+          "unit_price_usd",
+          "is_outlier",
+          "source"
+        ]
+      },
+      "success": true,
+      "observed_value": {
+        "missing_columns": []
+      },
+      "unexpected_count": 0,
+      "unexpected_percent": 0.0,
+      "error": null
+    },
+    {
+      "expectation_type": "expect_table_row_count_to_be_above",
+      "column": null,
+      "kwargs": {
+        "min_rows": 100
+      },
+      "success": true,
+      "observed_value": 12828,
+      "unexpected_count": 0,
+      "unexpected_percent": 0.0,
+      "error": null
+    },
+    {
+      "expectation_type": "expect_column_values_to_not_be_null",
+      "column": "shipment_date",
+      "kwargs": {},
+      "success": true,
+      "observed_value": 0,
+      "unexpected_count": 0,
+      "unexpected_percent": 0.0,
+      "error": null
+    },
+    {
+      "expectation_type": "expect_column_values_to_not_be_null",
+      "column": "fob_usd",
+      "kwargs": {},
+      "success": true,
+      "observed_value": 0,
+      "unexpected_count": 0,
+      "unexpected_percent": 0.0,
+      "error": null
+    },
+    {
+      "expectation_type": "expect_column_values_to_not_be_null",
+      "column": "quantity_kg",
+      "kwargs": {},
+      "success": true,
+      "observed_value": 0,
+      "unexpected_count": 0,
+      "unexpected_percent": 0.0,
+      "error": null
+    },
+    {
+      "expectation_type": "expect_column_values_to_not_be_null",
+      "column": "unit_price_usd",
+      "kwargs": {},
+      "success": true,
+      "observed_value": 0,
+      "unexpected_count": 0,
+      "unexpected_percent": 0.0,
+      "error": null
+    },
+    {
+      "expectation_type": "expect_column_values_to_not_be_null",
+      "column": "hs_code",
+      "kwargs": {},
+      "success": true,
+      "observed_value": 0,
+      "unexpected_count": 0,
+      "unexpected_percent": 0.0,
+      "error": null
+    },
+    {
+      "expectation_type": "expect_column_values_to_not_be_null",
+      "column": "dest_iso_alpha3",
+      "kwargs": {},
+      "success": true,
+      "observed_value": 0,
+      "unexpected_count": 0,
+      "unexpected_percent": 0.0,
+      "error": null
+    },
+    {
+      "expectation_type": "expect_column_values_to_not_be_null",
+      "column": "source",
+      "kwargs": {},
+      "success": true,
+      "observed_value": 0,
+      "unexpected_count": 0,
+      "unexpected_percent": 0.0,
+      "error": null
+    },
+    {
+      "expectation_type": "expect_column_values_to_be_between",
+      "column": "fob_usd",
+      "kwargs": {
+        "min_value": 0,
+        "max_value": 500000000
+      },
+      "success": true,
+      "observed_value": {
+        "min": 0.063,
+        "max": 24137698.37
+      },
+      "unexpected_count": 0,
+      "unexpected_percent": 0.0,
+      "error": null
+    },
+    {
+      "expectation_type": "expect_column_values_to_be_between",
+      "column": "quantity_kg",
+      "kwargs": {
+        "min_value": 0,
+        "max_value": null
+      },
+      "success": true,
+      "observed_value": {
+        "min": 0.007,
+        "max": 14558400.0
+      },
+      "unexpected_count": 0,
+      "unexpected_percent": 0.0,
+      "error": null
+    },
+    {
+      "expectation_type": "expect_column_values_to_be_between",
+      "column": "unit_price_usd",
+      "kwargs": {
+        "min_value": 0,
+        "max_value": 10000
+      },
+      "success": true,
+      "observed_value": {
+        "min": 0.0265,
+        "max": 2194.519
+      },
+      "unexpected_count": 0,
+      "unexpected_percent": 0.0,
+      "error": null
+    },
+    {
+      "expectation_type": "expect_column_values_to_be_between",
+      "column": "year",
+      "kwargs": {
+        "min_value": 2018,
+        "max_value": 2026
+      },
+      "success": true,
+      "observed_value": {
+        "min": 2019.0,
+        "max": 2024.0
+      },
+      "unexpected_count": 0,
+      "unexpected_percent": 0.0,
+      "error": null
+    },
+    {
+      "expectation_type": "expect_column_values_to_be_between",
+      "column": "month",
+      "kwargs": {
+        "min_value": 1,
+        "max_value": 12
+      },
+      "success": true,
+      "observed_value": {
+        "min": 1.0,
+        "max": 12.0
+      },
+      "unexpected_count": 0,
+      "unexpected_percent": 0.0,
+      "error": null
+    },
+    {
+      "expectation_type": "expect_column_value_lengths_to_equal",
+      "column": "dest_iso_alpha3",
+      "kwargs": {
+        "value": 3
+      },
+      "success": true,
+      "observed_value": {
+        "unique_lengths": [
+          3
+        ]
+      },
+      "unexpected_count": 0,
+      "unexpected_percent": 0.0,
+      "error": null
+    },
+    {
+      "expectation_type": "expect_column_values_to_match_regex",
+      "column": "hs_code",
+      "kwargs": {
+        "pattern": "\\d{6}"
+      },
+      "success": true,
+      "observed_value": {
+        "unexpected_examples": []
+      },
+      "unexpected_count": 0,
+      "unexpected_percent": 0.0,
+      "error": null
+    },
+    {
+      "expectation_type": "expect_column_values_to_be_in_set",
+      "column": "hs_code",
+      "kwargs": {
+        "value_set": [
+          "440929",
+          "442090",
+          "330749",
+          "130232",
+          "130239"
+        ]
+      },
+      "success": true,
+      "observed_value": {
+        "unexpected_examples": []
+      },
+      "unexpected_count": 0,
+      "unexpected_percent": 0.0,
+      "error": null
+    },
+    {
+      "expectation_type": "expect_column_values_to_be_in_set",
+      "column": "source",
+      "kwargs": {
+        "value_set": [
+          "COMTRADE",
+          "VOLZA",
+          "ZAUBA",
+          "BAKER_HUGHES",
+          "IMD"
+        ]
+      },
+      "success": true,
+      "observed_value": {
+        "unexpected_examples": []
+      },
+      "unexpected_count": 0,
+      "unexpected_percent": 0.0,
+      "error": null
+    },
+    {
+      "expectation_type": "expect_column_values_to_be_in_set",
+      "column": "is_peak_season",
+      "kwargs": {
+        "value_set": [
+          true,
+          false
+        ]
+      },
+      "success": true,
+      "observed_value": {
+        "unexpected_examples": []
+      },
+      "unexpected_count": 0,
+      "unexpected_percent": 0.0,
+      "error": null
+    },
+    {
+      "expectation_type": "expect_column_values_to_be_in_set",
+      "column": "is_outlier",
+      "kwargs": {
+        "value_set": [
+          true,
+          false
+        ]
+      },
+      "success": true,
+      "observed_value": {
+        "unexpected_examples": []
+      },
+      "unexpected_count": 0,
+      "unexpected_percent": 0.0,
+      "error": null
+    }
+  ]
+}

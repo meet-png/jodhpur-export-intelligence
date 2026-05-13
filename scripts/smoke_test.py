@@ -58,11 +58,13 @@ def check_env() -> bool:
     missing = [k for k in REQUIRED_ENV if not os.getenv(k)]
     if missing:
         fail(f".env missing required keys: {missing}")
-        print(textwrap.dedent("""
+        print(
+            textwrap.dedent("""
             Fix:
               1. cp .env.example .env
               2. Open .env in VS Code and fill in the values.
-        """))
+        """)
+        )
         return False
     ok(f"env vars present ({', '.join(REQUIRED_ENV)})")
     return True
@@ -87,25 +89,31 @@ def check_imports() -> bool:
 def check_postgres() -> bool:
     try:
         from sqlalchemy import create_engine, text
+
         engine = create_engine(os.environ["DATABASE_URL"], pool_pre_ping=True)
         with engine.connect() as conn:
-            row = conn.execute(text("SELECT 1 AS ping, current_database() AS db, version() AS v")).one()
+            row = conn.execute(
+                text("SELECT 1 AS ping, current_database() AS db, version() AS v")
+            ).one()
         ok(f"postgres connect: db={row.db}, version={row.v.split(',')[0]}")
         return True
     except Exception as exc:
         fail(f"postgres connection failed: {exc.__class__.__name__}: {exc}")
-        print(textwrap.dedent("""
+        print(
+            textwrap.dedent("""
             Common fixes:
               * Check DATABASE_URL spelling — port should be 6543 (pooler), not 5432.
               * If special chars in password (@ # & ? /), URL-encode them.
               * Supabase free tier pauses after a week idle. Visit your project
                 page in the browser to wake it, then retry.
-        """))
+        """)
+        )
         return False
 
 
 def check_comtrade() -> bool:
     import requests
+
     key = os.environ["COMTRADE_API_KEY"]
     # smallest possible call: India total exports of HS 440900 to USA, 2023, monthly
     url = (
@@ -146,8 +154,8 @@ def check_comtrade() -> bool:
 def main() -> None:
     print("\n=== JEIS smoke test ===\n")
     results = [
-        ("env",      check_env()),
-        ("imports",  check_imports()),
+        ("env", check_env()),
+        ("imports", check_imports()),
     ]
     if all(r for _, r in results):
         # Only run network checks if local checks pass.
@@ -160,10 +168,14 @@ def main() -> None:
         print(f"  {name:10s} {symbol}")
 
     if all(r for _, r in results):
-        print(f"\n{GREEN}All checks passed. You are ready to run the pipeline.{RESET}\n")
+        print(
+            f"\n{GREEN}All checks passed. You are ready to run the pipeline.{RESET}\n"
+        )
         sys.exit(0)
     else:
-        print(f"\n{RED}One or more checks failed — fix above before continuing.{RESET}\n")
+        print(
+            f"\n{RED}One or more checks failed — fix above before continuing.{RESET}\n"
+        )
         sys.exit(1)
 
 
