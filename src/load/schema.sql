@@ -83,7 +83,11 @@ CREATE TABLE IF NOT EXISTS fact_shipment (
     buyer_id         INTEGER     REFERENCES dim_company(company_id),
     product_id       INTEGER     NOT NULL REFERENCES dim_product(product_id),
     dest_country_id  INTEGER     NOT NULL REFERENCES dim_country(country_id),
-    fob_usd          NUMERIC(14,2) NOT NULL CHECK (fob_usd >= 0 AND fob_usd <= 10000000),
+    -- fob_usd cap is 500M, not the PRD-spec 10M, because Comtrade rows are
+    -- monthly country aggregates where single-row values of $20-200M are
+    -- normal. The original 10M cap was written for shipment-grain data.
+    -- See docs/ARCHITECTURE.md "Cleanup vs. PRD: known deviations".
+    fob_usd          NUMERIC(14,2) NOT NULL CHECK (fob_usd >= 0 AND fob_usd <= 500000000),
     quantity_kg      NUMERIC(14,3) NOT NULL CHECK (quantity_kg > 0),
     unit_price_usd   NUMERIC(12,4) NOT NULL CHECK (unit_price_usd > 0),
     is_outlier       BOOLEAN     NOT NULL DEFAULT FALSE,
