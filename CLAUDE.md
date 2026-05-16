@@ -4,7 +4,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Autonomy Rules
 
-- Run all bash/powershell commands yourself without asking, except: deleting files, installing new packages, pushing to git
+- Run all bash/powershell commands yourself without asking, except: deleting files, installing new packages
+- Push to git automatically after every commit — no need to ask
 - Run notebooks and scripts yourself and read the output — never ask me to run them and send screenshots
 - When you fix something, verify it yourself by running it
 - Commit working code to git automatically with descriptive messages
