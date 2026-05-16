@@ -1,0 +1,8 @@
+node_modules/
+.venv/
+__pycache__/
+*.log
+.ipynb_checkpoints/
+dist/
+build/
+.ruff_cache/

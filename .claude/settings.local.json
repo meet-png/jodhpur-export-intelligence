@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(cd \"C:\\\\Users\\\\ACER\\\\OneDrive\\\\Documents\\\\Claude\\\\Projects\\\\data intelligence system\\\\jodhpur-export-intelligence\"; Get-ChildItem -Force | Select-Object Name, @{Name='Type';Expression={if\\($_.PSIsContainer\\){'Directory'}else{'File'}}} | Sort-Object Type, Name)",
+      "PowerShell(Get-ChildItem -Path \"C:\\\\Users\\\\ACER\\\\OneDrive\\\\Documents\\\\Claude\\\\Projects\\\\data intelligence system\\\\jodhpur-export-intelligence\\\\src\" -Recurse | Where-Object {$_.Extension -eq '.py'} | Select-Object FullName)",
+      "PowerShell(Get-ChildItem -Path \"C:\\\\Users\\\\ACER\\\\OneDrive\\\\Documents\\\\Claude\\\\Projects\\\\data intelligence system\\\\jodhpur-export-intelligence\" -Recurse -File | Where-Object {$_.Extension -eq '.py'} | ForEach-Object {$_.FullName})",
+      "Bash",
+      "Edit",
+      "Read",
+      "Git"
+    ]
+  }
+}
