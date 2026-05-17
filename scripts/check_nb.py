@@ -4,7 +4,7 @@ import json
 import sys
 
 path = sys.argv[1] if len(sys.argv) > 1 else "notebooks/05_buyer_risk_executed.ipynb"
-with open(path) as f:
+with open(path, encoding="utf-8") as f:
     nb = json.load(f)
 
 errors = []
@@ -17,7 +17,7 @@ for i, cell in enumerate(nb["cells"]):
             text = "".join(out.get("text", out.get("data", {}).get("text/plain", [])))
             if text.strip():
                 print(f"--- Cell {i} ---")
-                print(text[:600])
+                print(text[:600].encode("ascii", errors="replace").decode("ascii"))
 
 if errors:
     print("\nERRORS FOUND:")
