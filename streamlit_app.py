@@ -127,7 +127,7 @@ st.sidebar.caption(f"runtime: plotly {plotly.__version__} · streamlit {st.__ver
 # ---------------------------------------------------------------------------
 
 if page == P_HOME:
-    st.title("Jodhpur Export Intelligence System")
+    st.title("Overview")
     st.markdown(
         "A small set of businesses in Jodhpur export **$2.5B+** of furniture "
         "and guar gum, but they run on gut feel — *when* to produce, *what* to "
@@ -184,7 +184,7 @@ if page == P_HOME:
 # ---------------------------------------------------------------------------
 
 elif page == P_PEAK:
-    st.title("1 · The peak that isn't")
+    st.title("Seasonality — the 'peak' that isn't")
     takeaway(
         "The whole cluster plans production for a September–November rush. "
         "The data shows that window is actually *below* the yearly average — "
@@ -284,7 +284,7 @@ elif page == P_PEAK:
 # ---------------------------------------------------------------------------
 
 elif page == P_MIRAGE:
-    st.title("2 · The ₹13,600 Cr mirage")
+    st.title("Price benchmark — the ₹13,600 Cr mirage")
     takeaway(
         "A quick model says exporters are leaving ₹18,310 Cr on the table by "
         "underpricing. Most of that is an illusion caused by comparing "
@@ -371,7 +371,7 @@ elif page == P_MIRAGE:
 # ---------------------------------------------------------------------------
 
 elif page == P_MARKETS:
-    st.title("3 · Which markets to defend")
+    st.title("Market segmentation — which markets to defend")
     takeaway(
         "Across ~170 export markets, this groups every country into 4 strategy "
         "buckets — and surfaces the dangerous ones: big markets that look "
@@ -450,7 +450,7 @@ elif page == P_MARKETS:
 # ---------------------------------------------------------------------------
 
 elif page == P_FORECAST:
-    st.title("4 · The 12-month forecast")
+    st.title("Guar demand forecast — next 12 months")
     takeaway(
         "Guar gum is ~85% of the cluster's money. This predicts the next 12 "
         "months — and shows the swing depends far more on US oil-drilling "

@@ -136,6 +136,7 @@ A free [UN Comtrade Plus](https://comtradeplus.un.org/) key and free [Supabase](
 | ORM / driver | SQLAlchemy 2.0, psycopg2 |
 | Forecasting | statsmodels **SARIMAX** (Prophet was dropped — no CmdStan build dependency) |
 | Clustering | scikit-learn (K-means, PCA) |
+| Dashboard | **Streamlit + Plotly** — 5-tab interactive app, deployed live on Streamlit Community Cloud (reads committed CSVs; no DB or API key) |
 | Automation | GitHub Actions (weekly cron + manual dispatch) |
 | Quality gates | ruff, gitleaks, nbstripout (pre-commit) |
 
@@ -172,7 +173,7 @@ These constraints are the reason the analysis leads with *judgment* (debunking t
 
 ## Roadmap
 
-- Power BI / Streamlit dashboard over `v_monthly_export` + `v_buyer_risk_register` (schema and write-backs already in place)
+- The Streamlit dashboard is **built and deployed** (linked at the top); next step is wiring it directly to the live `v_monthly_export` + `v_buyer_risk_register` views instead of the committed CSV snapshots
 - Upgrade curated regressor sources from annual to true weekly Baker Hughes / monthly IMD series (drop-in; ingestion + schema already built)
 - Expand the validation suite and `tests/`
 
