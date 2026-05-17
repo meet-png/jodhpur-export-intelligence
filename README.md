@@ -104,7 +104,7 @@ Full design rationale (why a star schema, why SARIMAX over Prophet, why Supabase
 ```bash
 git clone https://github.com/meet-png/jodhpur-export-intelligence.git
 cd jodhpur-export-intelligence
-pip install -r requirements.txt
+pip install -r requirements-pipeline.txt   # full env (root requirements.txt = slim dashboard deps)
 cp .env.example .env            # fill COMTRADE_API_KEY + DATABASE_URL
 
 python -m src.run_pipeline                 # full ETL → validate → load

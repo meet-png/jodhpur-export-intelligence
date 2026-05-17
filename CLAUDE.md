@@ -19,7 +19,7 @@ Jodhpur Export Intelligence System (JEIS) — an end-to-end analytics platform f
 
 ```bash
 # Environment setup
-pip install -r requirements.txt
+pip install -r requirements-pipeline.txt   # full pipeline/dev env (root requirements.txt is the slim Streamlit-deploy set)
 cp .env.example .env   # then fill COMTRADE_API_KEY and DATABASE_URL
 
 # Full ETL pipeline (ingest → transform → validate → load)
@@ -104,7 +104,7 @@ Notebooks write back to the DB: `dim_country.cluster_label` (notebook 3), `dim_c
 - **Immutable raw files**: PRD FR-1 — never overwrite `data/raw/`; always date-stamp new pulls.
 - **Halt on validation failure**: PRD FR-2 — pipeline exits non-zero rather than shipping wrong numbers.
 - **Parameterised SQL only**: No f-string interpolation into queries anywhere in the codebase.
-- **No floating dependency versions**: All 60 packages pinned in `requirements.txt`.
+- **No floating dependency versions**: every package pinned to an exact version. `requirements-pipeline.txt` is the full pipeline/dev env; root `requirements.txt` is the slim runtime set the deployed Streamlit dashboard needs (Streamlit Cloud auto-installs root).
 - **Notebook outputs stripped**: `nbstripout` pre-commit hook prevents large output blobs in git.
 
 ### Environment Variables

@@ -1,0 +1,65 @@
+# JEIS — FULL pipeline + dev environment.
+# This is what the ETL pipeline, notebooks, and CI need.
+#   pip install -r requirements-pipeline.txt
+# (The slim root requirements.txt is only what the deployed Streamlit
+#  dashboard imports — Streamlit Community Cloud installs that one.)
+# Pinned to exact minor versions to keep CI reproducible.
+# Tested against Python 3.11 on Windows 11 and Ubuntu 22.04 (GitHub Actions).
+
+# --- Core data wrangling ---
+pandas==2.2.2
+numpy==1.26.4
+pyarrow==16.1.0          # Parquet support
+python-dateutil==2.9.0.post0
+
+# --- HTTP / APIs ---
+requests==2.32.3
+httpx==0.27.0
+tenacity==8.5.0          # retry decorators for flaky public APIs
+python-dotenv==1.0.1
+
+# --- Country & FX standardisation ---
+pycountry==24.6.1
+forex-python==1.8
+
+# --- Validation ---
+great-expectations==0.18.19
+
+# --- Database ---
+sqlalchemy==2.0.31
+psycopg2-binary==2.9.9   # Postgres driver (binary wheel — no compile on Windows)
+alembic==1.13.2          # schema migrations
+
+# --- Forecasting & ML ---
+# Prophet was removed project-wide: it needs a CmdStan/C++ build that fails
+# on this environment and on Streamlit Cloud. NB02 + NB06 use statsmodels
+# SARIMAX instead — see docs/ARCHITECTURE.md.
+scikit-learn==1.5.1
+statsmodels==0.14.2
+
+# --- Visualisation ---
+matplotlib==3.9.0
+seaborn==0.13.2
+plotly==5.22.0
+
+# --- Notebook tooling ---
+jupyterlab==4.2.3
+ipywidgets==8.1.3
+nbformat==5.10.4
+
+# --- PDF parsing for APEDA / IMD reports ---
+tabula-py==2.9.3
+pypdf==4.3.1
+
+# --- Web scraping (Zauba fallback) ---
+beautifulsoup4==4.12.3
+lxml==5.2.2
+
+# --- Email alerting ---
+# uses stdlib smtplib — no extra package needed
+
+# --- Dev / testing ---
+pytest==8.2.2
+pytest-cov==5.0.0
+ruff==0.5.5              # linter + formatter (replaces black + flake8)
+mypy==1.10.1
