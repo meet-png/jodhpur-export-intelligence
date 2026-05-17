@@ -8,9 +8,9 @@
 
 📊 **[▶ Try the live dashboard (no login, ~30s to load)](https://jodhpur-export-intelligence-ashjm6at7ctsyq65hwwqxk.streamlit.app/)** &nbsp;·&nbsp; 📓 **[Notebook tour](notebooks/)** &nbsp;·&nbsp; 🏗 **[Architecture & design rationale](docs/ARCHITECTURE.md)** &nbsp;·&nbsp; 🔁 **[Weekly-refresh workflow](.github/workflows/weekly-refresh.yml)**
 
-<!-- SCREENSHOT SLOT — see docs/img/CAPTURE.md. After adding the file, delete the two comment markers around the next line:
-![JEIS dashboard](docs/img/dashboard.png)
--->
+[![JEIS — live interactive dashboard](docs/img/dashboard.gif)](https://jodhpur-export-intelligence-ashjm6at7ctsyq65hwwqxk.streamlit.app/)
+
+<sub>↑ the live dashboard — click the image to open it</sub>
 
 ---
 

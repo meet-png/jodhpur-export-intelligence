@@ -44,6 +44,11 @@ ipython_config.py
 # Executed-notebook verification artifacts (throwaway, regenerated on demand)
 notebooks/*_executed.ipynb
 
+# Raw screen recordings used to make README GIFs — commit the GIF, not the
+# multi-MB capture (also keeps us under the 1 MB large-file hook).
+docs/img/*.mp4
+docs/img/*.mov
+
 # --- Data (we commit only small samples) ---
 # Raw data files are kept locally but a sample committed
 # Comment these out if you want to commit raw data (we don't, by default)
