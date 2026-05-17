@@ -293,6 +293,16 @@ elif page == P_MIRAGE:
     )
     ps = load_price_summary()
 
+    # HS codes are product *categories*, not numbers — render them as named
+    # panels. (Plotly auto-types all-numeric-string axes as continuous on
+    # some versions, which made the old single-axis chart unreadable.)
+    PRODUCT = {
+        "130232": "Guar gum (130232)",
+        "130239": "Other gums (130239)",
+        "330749": "Fragrance (330749)",
+        "440929": "Wood, rough (440929)",
+        "442090": "Wood articles (442090)",
+    }
     long = ps.melt(
         id_vars="hs_code",
         value_vars=["india_usd_per_kg", "vietnam_usd_per_kg", "morocco_usd_per_kg"],
@@ -300,26 +310,43 @@ elif page == P_MIRAGE:
         value_name="usd_per_kg",
     )
     long["reporter"] = long["reporter"].str.replace("_usd_per_kg", "").str.title()
+    long["product"] = long["hs_code"].map(PRODUCT).fillna(long["hs_code"])
+
     fig = px.bar(
         long,
-        x="hs_code",
+        x="reporter",
         y="usd_per_kg",
         color="reporter",
-        barmode="group",
-        title="Average selling price per kg, 2019–2024 — India vs competitors",
+        facet_col="product",
+        facet_col_wrap=5,
+        category_orders={
+            "reporter": ["India", "Vietnam", "Morocco"],
+            "product": [
+                PRODUCT[h] for h in ["130232", "130239", "330749", "440929", "442090"]
+            ],
+        },
         color_discrete_map={
             "India": "#e76f51",
             "Vietnam": "#2a9d8f",
             "Morocco": "#e9c46a",
         },
-        height=420,
+        title="Average selling price per kg, 2019–2024 — one panel per product",
+        height=430,
     )
+    # Each product gets its OWN y-scale, so Morocco's specialty-grade guar
+    # ($33/kg) can't flatten the other four products into invisibility.
+    fig.update_yaxes(matches=None, showticklabels=True, title_text="USD / kg")
+    fig.update_xaxes(title_text=None, type="category")
+    fig.for_each_annotation(lambda a: a.update(text=a.text.split("=")[-1]))
+    fig.update_layout(showlegend=False, margin=dict(t=70))
     st.plotly_chart(fig, use_container_width=True)
     st.caption(
-        "How to read this: each cluster of bars is one product (by trade code). "
-        "Where India's bar is far below the others, India is selling the same "
-        "code much cheaper. That looks like lost money — but read the warning "
-        "below for why the Morocco bars are misleading."
+        "How to read this: **one mini-panel per product**, each on its own "
+        "scale so no single product flattens the rest. Within each panel "
+        "compare the three bars — India (red) vs Vietnam (teal) vs Morocco "
+        "(yellow). India is dramatically cheaper on **guar gum (130232)**. "
+        "Morocco's guar bar is huge for a reason that is *not* good news — "
+        "see the warning below."
     )
 
     raw = ps[["opp_vs_vietnam_inr_cr", "opp_vs_morocco_inr_cr"]].sum().sum()
