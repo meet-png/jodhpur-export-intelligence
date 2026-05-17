@@ -36,6 +36,9 @@ matplotlib==3.9.0
 seaborn==0.13.2
 plotly==5.22.0
 
+# --- Interactive dashboard (streamlit_app.py; deployed on Streamlit Cloud) ---
+streamlit==1.38.0
+
 # --- Notebook tooling ---
 jupyterlab==4.2.3
 ipywidgets==8.1.3
