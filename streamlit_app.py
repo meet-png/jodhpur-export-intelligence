@@ -16,6 +16,7 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
+import plotly
 import plotly.express as px
 import plotly.graph_objects as go
 import streamlit as st
@@ -116,6 +117,9 @@ st.sidebar.markdown(
     "[GitHub repo](https://github.com/meet-png/jodhpur-export-intelligence) · "
     "Built by Meet Kabra"
 )
+# Runtime version readout — diagnostic. Charts render blank on Plotly 6;
+# this line makes the deployed versions visible at a glance.
+st.sidebar.caption(f"runtime: plotly {plotly.__version__} · streamlit {st.__version__}")
 
 
 # ---------------------------------------------------------------------------
