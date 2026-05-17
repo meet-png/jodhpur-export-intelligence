@@ -17,7 +17,7 @@ A 5-tab interactive dashboard ([`streamlit_app.py`](streamlit_app.py)) lets you 
 Or run it locally in one command:
 
 ```bash
-pip install -r requirements.txt      # 5 packages — slim dashboard deps
+pip install -r requirements.txt      # 4 packages — slim dashboard deps
 streamlit run streamlit_app.py       # opens at http://localhost:8501
 ```
 

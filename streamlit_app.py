@@ -68,6 +68,14 @@ def load_monsoon() -> pd.DataFrame:
     return pd.read_csv(DATA / "monsoon_clean.csv")
 
 
+@st.cache_data
+def load_forecast() -> pd.DataFrame:
+    # Pre-computed offline by the SARIMAX model (one row per rig-scenario ×
+    # forecast month) so the deployed tab is instant — no model fit, no
+    # statsmodels/scipy in the deploy. Regenerated when the pipeline reruns.
+    return pd.read_csv(DATA / "guar_forecast_precomputed.csv", parse_dates=["month"])
+
+
 def rs(cr: float) -> str:
     return f"₹{cr:,.0f} Cr"
 
@@ -383,83 +391,30 @@ elif page == "Price benchmark":
 elif page == "Guar demand forecast":
     st.title("Guar demand forecast — SARIMAX + rig count + monsoon")
     df = load_exports()
-    rig = load_rig()
-    mon = load_monsoon()
+    fc = load_forecast()
 
     guar = (
         df[df["hs_code"].isin(GUAR_HS)]
         .groupby(df["shipment_date"].dt.to_period("M").dt.to_timestamp())["fob_usd"]
         .sum()
     )
-    guar.index = pd.DatetimeIndex(guar.index, freq="MS")
-
-    rig["m"] = rig["week_start_date"].dt.to_period("M").dt.to_timestamp()
-    rig_monthly = (
-        rig.groupby("m")["rig_count"].mean().reindex(guar.index).ffill().bfill()
-    )
-    mon_map = dict(zip(mon["year"], mon["lpa_pct"]))
-    mon_monthly = pd.Series(
-        {d: mon_map.get(d.year, 100.0) for d in guar.index}, name="lpa"
-    )
-
-    rig_mean, rig_std = rig_monthly.mean(), rig_monthly.std()
-    mon_mean, mon_std = mon_monthly.mean(), mon_monthly.std()
-    rig_2024 = rig[rig["week_start_date"].dt.year == 2024]["rig_count"].mean()
-
-    @st.cache_resource
-    def fit_model(_y: pd.Series, _exog: pd.DataFrame):
-        from statsmodels.tsa.statespace.sarimax import SARIMAX
-
-        return SARIMAX(
-            _y,
-            exog=_exog,
-            order=(1, 0, 1),
-            seasonal_order=(1, 1, 0, 12),
-            enforce_stationarity=False,
-            enforce_invertibility=False,
-        ).fit(disp=False)
-
-    exog = pd.DataFrame(
-        {
-            "rig_z": (rig_monthly - rig_mean) / rig_std,
-            "monsoon_z": (mon_monthly - mon_mean) / mon_std,
-        },
-        index=guar.index,
-    )
-    with st.spinner("Fitting SARIMAX (cached after first run)…"):
-        res = fit_model(guar, exog)
 
     st.markdown(
-        "Move the slider: it changes the assumed US rig count and re-forecasts "
-        "the next 12 months live. This is the ₹1,540 Cr swing, made tangible."
+        "Move the slider: it sets the assumed US rig count and redraws the "
+        "12-month forecast instantly. This is the ₹1,540 Cr swing, made "
+        "tangible — the SARIMAX model is pre-fit, so every position is instant."
     )
     scenario = st.slider("US rig count vs 2024 average", -40, 40, 0, 5, format="%d%%")
 
-    horizon = 12
-    future = pd.date_range(
-        guar.index[-1] + pd.DateOffset(months=1), periods=horizon, freq="MS"
-    )
-
-    def fcast(rig_mult: float):
-        ex = pd.DataFrame(
-            {
-                "rig_z": (rig_2024 * rig_mult - rig_mean) / rig_std,
-                "monsoon_z": (100.0 - mon_mean) / mon_std,
-            },
-            index=future,
-        )
-        f = res.get_forecast(horizon, exog=ex)
-        return f.predicted_mean.clip(lower=0), f.conf_int(alpha=0.10).clip(lower=0)
-
-    base_mean, _ = fcast(1.0)
-    sc_mean, sc_ci = fcast(1 + scenario / 100)
+    sc = fc[fc["scenario_pct"] == scenario].sort_values("month")
+    base = fc[fc["scenario_pct"] == 0].sort_values("month")
 
     c1, c2, c3 = st.columns(3)
-    c1.metric("Base 12-mo forecast", rs(base_mean.sum() * INR_PER_USD / 1e7))
+    c1.metric("Base 12-mo forecast", rs(base["yhat_usd"].sum() * INR_PER_USD / 1e7))
     c2.metric(
         f"Scenario ({scenario:+d}% rigs)",
-        rs(sc_mean.sum() * INR_PER_USD / 1e7),
-        rs((sc_mean.sum() - base_mean.sum()) * INR_PER_USD / 1e7),
+        rs(sc["yhat_usd"].sum() * INR_PER_USD / 1e7),
+        rs((sc["yhat_usd"].sum() - base["yhat_usd"].sum()) * INR_PER_USD / 1e7),
     )
     c3.metric("Driver", "Rig count > monsoon", "confirmed by model coefficients")
 
@@ -475,16 +430,16 @@ elif page == "Guar demand forecast":
     )
     fig.add_trace(
         go.Scatter(
-            x=future,
-            y=sc_mean / 1e6,
+            x=sc["month"],
+            y=sc["yhat_usd"] / 1e6,
             name=f"Forecast ({scenario:+d}% rigs)",
             line=dict(color="#2a9d8f", width=3),
         )
     )
     fig.add_trace(
         go.Scatter(
-            x=list(future) + list(future[::-1]),
-            y=list(sc_ci.iloc[:, 1] / 1e6) + list(sc_ci.iloc[:, 0][::-1] / 1e6),
+            x=list(sc["month"]) + list(sc["month"][::-1]),
+            y=list(sc["ci_high_usd"] / 1e6) + list(sc["ci_low_usd"][::-1] / 1e6),
             fill="toself",
             fillcolor="rgba(42,157,143,0.15)",
             line=dict(width=0),
@@ -494,8 +449,8 @@ elif page == "Guar demand forecast":
     )
     fig.add_trace(
         go.Scatter(
-            x=future,
-            y=base_mean / 1e6,
+            x=base["month"],
+            y=base["yhat_usd"] / 1e6,
             name="Base (0%)",
             line=dict(color="gray", dash="dot"),
         )
@@ -509,6 +464,7 @@ elif page == "Guar demand forecast":
     st.plotly_chart(fig, use_container_width=True)
     st.caption(
         "SARIMAX(1,0,1)(1,1,0,12) with z-scored rig-count + monsoon exogenous "
-        "regressors. MAPE ≈ 25% on rolling-origin CV — wide but honest bands. "
-        "Forecast window is data-relative (12 months from Dec 2024)."
+        "regressors, fit offline and pre-computed across every rig scenario "
+        "(regenerated each pipeline run). MAPE ≈ 25% on rolling-origin CV — "
+        "wide but honest bands. Forecast window is data-relative (from Dec 2024)."
     )
