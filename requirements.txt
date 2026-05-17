@@ -6,16 +6,17 @@
 # No Prophet/Stan build, no statsmodels/scipy, no Java/tabula, no DB driver:
 # the deploy is fast and has zero compile steps.
 #
-# Lower bounds (not exact pins) on purpose: this is a disposable demo
-# environment where Streamlit Cloud may run any Python (3.10–3.13). Letting
-# pip resolve a wheel-available compatible set makes the deploy bulletproof
-# regardless of the runner's Python. Exact, reproducible pins live where
-# they matter — the pipeline/CI: requirements-pipeline.txt.
+# Lower bounds keep the deploy wheel-available on whatever Python Streamlit
+# Cloud runs (3.10–3.13). MAJOR-version caps are deliberate: Plotly 6 and
+# Streamlit 2 changed chart-rendering internals and made deployed charts
+# render blank / mis-sized. The whole dashboard is verified working on
+# Plotly 5.x + Streamlit 1.x — these caps keep the deploy on that proven
+# line instead of silently pulling a breaking new major.
 #
-# To run the FULL ETL pipeline / notebooks / CI instead:
+# Exact, reproducible pins for the pipeline/CI live in:
 #   pip install -r requirements-pipeline.txt
 
-streamlit>=1.38
+streamlit>=1.38,<2
 pandas>=2.2
 numpy>=1.26
-plotly>=5.22
+plotly>=5.22,<6
