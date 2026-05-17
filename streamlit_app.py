@@ -417,29 +417,48 @@ elif page == P_MARKETS:
         col.metric(label, f"{n} countries")
 
     plot = seg.dropna(subset=["cagr", "last_year_fob_usd"]).copy()
-    plot["last_year_fob_musd"] = plot["last_year_fob_usd"] / 1e6
+    # 4 strong, distinct colours so every cluster is obvious at a glance.
+    CLUSTER_COLORS = {
+        "Core": "#2a9d8f",  # teal
+        "Rising Star": "#e9c46a",  # gold
+        "Declining": "#e76f51",  # red
+        "Untapped": "#8338ec",  # purple
+    }
     fig = px.scatter(
         plot,
         x="cagr",
-        y="last_year_fob_musd",
+        y="last_year_fob_usd",  # raw USD on a log axis — no "μ"-prefixed ticks
         color="cluster_label",
-        size="total_fob_usd",
         hover_name="country_name",
+        hover_data={"cagr": ":.1%", "last_year_fob_usd": ":,.0f"},
         log_y=True,
+        category_orders={
+            "cluster_label": ["Core", "Rising Star", "Declining", "Untapped"]
+        },
+        color_discrete_map=CLUSTER_COLORS,
         labels={
-            "cagr": "Annual growth rate (negative = shrinking)",
-            "last_year_fob_musd": "2024 export value (USD millions, log scale)",
+            "cagr": "Annual growth rate",
+            "last_year_fob_usd": "2024 export value (USD, log scale)",
+            "cluster_label": "Cluster",
         },
         title="Every export market — growth vs current size",
-        height=480,
+        height=520,
     )
+    # Fixed, fully-visible markers (the old size= mapping shrank the small
+    # Rising Star / Untapped clusters to invisibility).
+    fig.update_traces(
+        marker=dict(size=11, opacity=0.8, line=dict(width=0.5, color="white"))
+    )
+    fig.update_xaxes(tickformat=".0%", zeroline=False)
+    fig.update_yaxes(tickprefix="$")
     fig.add_vline(x=0, line_dash="dash", line_color="gray")
     st.plotly_chart(fig, use_container_width=True)
     st.caption(
-        "How to read this: **right = growing, left = shrinking; higher = more "
-        "revenue today; bigger dot = bigger total customer.** The danger zone "
-        "is the **top-left**: large markets that are declining. Hover any dot "
-        "for the country."
+        "How to read this: **right = growing, left = shrinking; higher up = "
+        "more 2024 revenue.** Colour = cluster (see legend). The danger zone "
+        "is the **top-left**: big markets that are declining (the Core-but-"
+        "Declining watchlist below). Every dot is one country — hover for the "
+        "name, exact growth %, and 2024 value."
     )
 
     st.subheader("⚠️ The watchlist nobody else flags")
