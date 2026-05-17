@@ -2,17 +2,19 @@
 #
 # Streamlit Community Cloud auto-installs this root requirements.txt. The
 # dashboard (streamlit_app.py) reads pre-computed CSVs and only needs these
-# five packages — keeping this list minimal makes the deploy fast and
-# bulletproof (no Prophet/Stan build, no Java/tabula, no DB drivers).
+# five libraries — no Prophet/Stan build, no Java/tabula, no DB drivers.
 #
-# To run the FULL ETL pipeline / notebooks / CI, install the complete
-# pinned environment instead:
+# Lower bounds (not exact pins) on purpose: this is a disposable demo
+# environment where Streamlit Cloud may run any Python (3.10–3.13). Letting
+# pip resolve a mutually-compatible, wheel-available set makes the deploy
+# bulletproof regardless of the runner's Python. Exact, reproducible pins
+# live where they matter — the pipeline/CI: requirements-pipeline.txt.
+#
+# To run the FULL ETL pipeline / notebooks / CI instead:
 #   pip install -r requirements-pipeline.txt
-#
-# Pinned to the same versions as the pipeline env; tested on Python 3.11.
 
-streamlit==1.38.0
-pandas==2.2.2
-numpy==1.26.4
-plotly==5.22.0
-statsmodels==0.14.2      # SARIMAX for the live guar-forecast tab
+streamlit>=1.38
+pandas>=2.2
+numpy>=1.26
+plotly>=5.22
+statsmodels>=0.14.2      # SARIMAX for the live guar-forecast tab
