@@ -27,12 +27,12 @@ GUAR_HS = ["130232", "130239"]
 PEAK_MONTHS = [9, 10, 11]
 INR_PER_USD = 83.0
 
-# Narrative page labels — pointer-marked; read top to bottom as a story.
-P_HOME = "Start here"
-P_PEAK = "▸ The peak that isn't"
-P_MIRAGE = "▸ The ₹13,600 Cr mirage"
-P_MARKETS = "▸ Which markets to defend"
-P_FORECAST = "▸ The 12-month forecast"
+# Sidebar nav labels = each page's title, pointer-marked, read top to bottom.
+P_HOME = "▸ Overview"
+P_PEAK = "▸ Seasonality"
+P_MIRAGE = "▸ Price benchmark"
+P_MARKETS = "▸ Market segmentation"
+P_FORECAST = "▸ Guar demand forecast"
 
 st.set_page_config(
     page_title="Jodhpur Export Intelligence",
@@ -159,15 +159,15 @@ if page == P_HOME:
     st.markdown("---")
     st.markdown(
         "**How to use this dashboard:** open the tabs on the left, "
-        "**top to bottom**. Each one is a single finding, explained in plain English "
-        "with the chart that proves it.\n\n"
-        "1. **The peak that isn't** — why the industry's main production "
-        "assumption is wrong.\n"
-        "2. **The ₹13,600 Cr mirage** — why most of a 'pricing opportunity' "
-        "isn't real, and why saying so matters.\n"
-        "3. **Which markets to defend** — which export markets to grow, fix, "
-        "or quietly worry about.\n"
-        "4. **The 12-month forecast** — what's coming for guar gum, and the one "
+        "**top to bottom** — each is one finding, in plain English, with the "
+        "chart that proves it.\n\n"
+        "- **Seasonality** — why the industry's main production assumption is "
+        "wrong (the 'peak' that isn't).\n"
+        "- **Price benchmark** — why most of a ₹18,310 Cr 'pricing "
+        "opportunity' isn't real, and why saying so matters.\n"
+        "- **Market segmentation** — which export markets to grow, fix, or "
+        "quietly worry about.\n"
+        "- **Guar demand forecast** — what's coming for guar gum, and the one "
         "external signal that moves it (drag the slider)."
     )
 
