@@ -22,13 +22,20 @@ Jodhpur Export Intelligence System (JEIS) — an end-to-end analytics platform f
 pip install -r requirements.txt
 cp .env.example .env   # then fill COMTRADE_API_KEY and DATABASE_URL
 
-# Full ETL pipeline (ingest → transform → load)
-python -m src.run_pipeline
+# Full ETL pipeline (ingest → transform → validate → load)
+python -m src.run_pipeline                                 # full weekly refresh
+python -m src.run_pipeline --skip-ingest                   # reuse existing raw + external data
+python -m src.run_pipeline --dry-run                       # all stages except the DB write
 
 # Individual pipeline stages
 python -m src.ingest.comtrade_api                          # full pull (5 HS codes × 6 years)
 python -m src.ingest.comtrade_api --hs-code 440929 --year 2023  # narrow pull
 python -m src.ingest.comtrade_api --dry-run                # no file writes
+
+python -m src.ingest.rig_count                             # Baker Hughes NA rig count → rig_count_weekly
+python -m src.ingest.rig_count --no-db                     # write processed CSV only
+python -m src.ingest.monsoon                               # IMD Rajasthan monsoon → monsoon_yearly
+python -m src.ingest.monsoon --no-db                       # write processed CSV only
 
 python -m src.transform.clean                              # flatten JSON → Parquet + CSV
 python -m src.transform.validate                           # run 20-expectation quality suite
@@ -64,9 +71,12 @@ UN Comtrade API → data/raw/comtrade_{hs}_{year}_{date}.json   (immutable, date
                 → notebooks/ + Power BI dashboard
 ```
 
-**Orchestrator**: `src/run_pipeline.py` — a simple procedural script, not Airflow. The weekly refresh takes <15 min so no scheduler complexity is warranted.
+**Orchestrator**: `src/run_pipeline.py` — a simple procedural script, not Airflow. Runs the 7 stages in order (comtrade → rig_count → monsoon → clean → validate → init_db → load_db), halts on the first failure (validate is the FR-2 gate), and gracefully *skips* (not fails) the DB stages when `DATABASE_URL` is absent so it runs offline. The weekly refresh takes <15 min so no scheduler complexity is warranted. Triggered weekly by `.github/workflows/weekly-refresh.yml` (Sunday 02:00 UTC cron + manual dispatch); a Gmail alert fires on failure.
 
-**Ingest** (`src/ingest/comtrade_api.py`): Hits UN Comtrade Plus REST API at `https://comtradeapi.un.org/data/v1/get/C/M/HS`. India reporter code = 699. 30 calls per full refresh (5 HS × 6 years) well within the 500/day free-tier cap. Uses tenacity exponential backoff. Raw files are never overwritten — append-only with date stamp.
+**Ingest** (`src/ingest/`):
+- `comtrade_api.py`: Hits UN Comtrade Plus REST API at `https://comtradeapi.un.org/data/v1/get/C/M/HS`. India reporter code = 699. 30 calls per full refresh (5 HS × 6 years) well within the 500/day free-tier cap. Uses tenacity exponential backoff. Raw files are never overwritten — append-only with date stamp.
+- `rig_count.py`: Baker Hughes NA rig count (guar demand regressor). Curated source `data/external/baker_hughes_rig_count_annual.csv` broadcast to weekly grain, UPSERT into `rig_count_weekly`, also writes `data/processed/rig_count_clean.csv`.
+- `monsoon.py`: IMD Rajasthan SW-monsoon (guar supply regressor). Curated source `data/external/imd_rajasthan_monsoon.csv`, UPSERT into `monsoon_yearly`, also writes `data/processed/monsoon_clean.csv`. Both ingest modules are offline-safe: no `DATABASE_URL` → CSV-only, exit 0.
 
 **Transform** (`src/transform/clean.py`): Flattens nested Comtrade JSON to tidy DataFrame. Key operations: ISO 3166-1 alpha-3 country normalisation via pycountry, peak-season flag (`PEAK_SEASON_MONTHS = (9, 10, 11)`), aggregate-partner exclusion (codes 0, 99, 199, etc. are world totals, not real countries), outlier flagging (≥99th percentile unit price per HS code — flagged, not dropped). Output: Parquet (primary) + CSV (human-readable).
 
@@ -81,11 +91,11 @@ UN Comtrade API → data/raw/comtrade_{hs}_{year}_{date}.json   (immutable, date
 
 Six notebooks in sequence:
 1. `01_EDA.ipynb` — 6 narrated charts, headline findings
-2. `02_demand_forecast.ipynb` — Prophet time-series with cross-validation
+2. `02_demand_forecast.ipynb` — SARIMAX time-series with rolling-origin cross-validation
 3. `03_market_segmentation.ipynb` — K-means country clustering (k=4, business-driven)
 4. `04_price_benchmark.ipynb` — FOB price gap vs. Vietnamese/Moroccan competitors
 5. `05_buyer_risk.ipynb` — weighted risk score (no labelled defaults, so no logistic regression)
-6. `06_guar_model.ipynb` — Prophet + rig count + monsoon regressors
+6. `06_guar_model.ipynb` — SARIMAX + rig count + monsoon exogenous regressors (consumes the ingested `rig_count_weekly` / `monsoon_yearly` data)
 
 Notebooks write back to the DB: `dim_country.cluster_label` (notebook 3), `dim_company.risk_score` (notebook 5).
 

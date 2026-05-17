@@ -1,6 +1,6 @@
 {
-  "started_at": "2026-05-13T20:34:08.075525",
-  "finished_at": "2026-05-13T20:34:08.107880",
+  "started_at": "2026-05-17T04:03:26.123260",
+  "finished_at": "2026-05-17T04:03:26.158590",
   "parquet_path": "data\\processed\\exports_clean.parquet",
   "row_count": 12828,
   "success_count": 20,
