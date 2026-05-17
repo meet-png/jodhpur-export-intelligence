@@ -27,12 +27,13 @@ GUAR_HS = ["130232", "130239"]
 PEAK_MONTHS = [9, 10, 11]
 INR_PER_USD = 83.0
 
-# Sidebar nav labels = each page's title, pointer-marked, read top to bottom.
+# Sidebar nav = each page's title, named for the INSIGHT it delivers
+# (not the technique), pointer-marked, read top to bottom.
 P_HOME = "▸ Overview"
-P_PEAK = "▸ Seasonality"
-P_MIRAGE = "▸ Price benchmark"
-P_MARKETS = "▸ Market segmentation"
-P_FORECAST = "▸ Guar demand forecast"
+P_PEAK = "▸ The seasonal myth"
+P_MIRAGE = "▸ The ₹13,600 Cr mirage"
+P_MARKETS = "▸ The markets quietly dying"
+P_FORECAST = "▸ The ₹1,540 Cr swing"
 
 st.set_page_config(
     page_title="Jodhpur Export Intelligence",
@@ -127,7 +128,7 @@ st.sidebar.caption(f"runtime: plotly {plotly.__version__} · streamlit {st.__ver
 # ---------------------------------------------------------------------------
 
 if page == P_HOME:
-    st.title("Overview")
+    st.title("Overview — three findings that change a decision")
     st.markdown(
         "A small set of businesses in Jodhpur export **$2.5B+** of furniture "
         "and guar gum, but they run on gut feel — *when* to produce, *what* to "
@@ -161,14 +162,14 @@ if page == P_HOME:
         "**How to use this dashboard:** open the tabs on the left, "
         "**top to bottom** — each is one finding, in plain English, with the "
         "chart that proves it.\n\n"
-        "- **Seasonality** — why the industry's main production assumption is "
-        "wrong (the 'peak' that isn't).\n"
-        "- **Price benchmark** — why most of a ₹18,310 Cr 'pricing "
+        "- **The seasonal myth** — the Sep–Nov 'peak' the whole industry "
+        "plans around doesn't exist at cluster level.\n"
+        "- **The ₹13,600 Cr mirage** — most of an ₹18,310 Cr 'pricing "
         "opportunity' isn't real, and why saying so matters.\n"
-        "- **Market segmentation** — which export markets to grow, fix, or "
-        "quietly worry about.\n"
-        "- **Guar demand forecast** — what's coming for guar gum, and the one "
-        "external signal that moves it (drag the slider)."
+        "- **The markets quietly dying** — segmentation, plus the big markets "
+        "eroding while still looking healthy.\n"
+        "- **The ₹1,540 Cr swing** — the 12-month guar forecast and the one "
+        "external signal that really moves it (drag the slider)."
     )
 
     st.info(
@@ -184,7 +185,7 @@ if page == P_HOME:
 # ---------------------------------------------------------------------------
 
 elif page == P_PEAK:
-    st.title("Seasonality — the 'peak' that isn't")
+    st.title("The seasonal myth — the 'peak' that isn't")
     takeaway(
         "The whole cluster plans production for a September–November rush. "
         "The data shows that window is actually *below* the yearly average — "
@@ -284,7 +285,7 @@ elif page == P_PEAK:
 # ---------------------------------------------------------------------------
 
 elif page == P_MIRAGE:
-    st.title("Price benchmark — the ₹13,600 Cr mirage")
+    st.title("The ₹13,600 Cr mirage — a pricing gap that mostly isn't real")
     takeaway(
         "A quick model says exporters are leaving ₹18,310 Cr on the table by "
         "underpricing. Most of that is an illusion caused by comparing "
@@ -398,7 +399,7 @@ elif page == P_MIRAGE:
 # ---------------------------------------------------------------------------
 
 elif page == P_MARKETS:
-    st.title("Market segmentation — which markets to defend")
+    st.title("The markets quietly dying — segmentation + at-risk watchlist")
     takeaway(
         "Across ~170 export markets, this groups every country into 4 strategy "
         "buckets — and surfaces the dangerous ones: big markets that look "
@@ -496,7 +497,7 @@ elif page == P_MARKETS:
 # ---------------------------------------------------------------------------
 
 elif page == P_FORECAST:
-    st.title("Guar demand forecast — next 12 months")
+    st.title("The ₹1,540 Cr swing — what really drives guar demand")
     takeaway(
         "Guar gum is ~85% of the cluster's money. This predicts the next 12 "
         "months — and shows the swing depends far more on US oil-drilling "
