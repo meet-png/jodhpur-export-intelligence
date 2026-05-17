@@ -2,7 +2,15 @@
 
 > **An end-to-end, self-refreshing analytics pipeline for Jodhpur's furniture & guar-gum export cluster — built entirely on free public data.**
 
-📊 **[▶ Live interactive dashboard](https://jodhpur-export-intelligence-ashjm6at7ctsyq65hwwqxk.streamlit.app/)** &nbsp;·&nbsp; 📓 **[Notebook tour](notebooks/)** &nbsp;·&nbsp; 🏗 **[Architecture & design rationale](docs/ARCHITECTURE.md)** &nbsp;·&nbsp; 🔁 **[Weekly-refresh workflow](.github/workflows/weekly-refresh.yml)**
+**In one breath:** India's furniture & guar-gum exporters move billions but decide on gut feel. This is a system that turns 6 years of *free public trade data* into clear decisions, refreshes itself every week, and is **live and clickable**. Built solo (AI-assisted) by a pre-final-year student.
+
+**The finding that matters:** the whole industry plans production around a "September peak." The data proves that peak **doesn't exist** — and the project openly kills a ₹13,600 Cr "opportunity" that turned out to be a measurement mirage. Questioning the brief and refusing a wrong number is the point.
+
+📊 **[▶ Try the live dashboard (no login, ~30s to load)](https://jodhpur-export-intelligence-ashjm6at7ctsyq65hwwqxk.streamlit.app/)** &nbsp;·&nbsp; 📓 **[Notebook tour](notebooks/)** &nbsp;·&nbsp; 🏗 **[Architecture & design rationale](docs/ARCHITECTURE.md)** &nbsp;·&nbsp; 🔁 **[Weekly-refresh workflow](.github/workflows/weekly-refresh.yml)**
+
+<!-- SCREENSHOT SLOT — see docs/img/CAPTURE.md. After adding the file, delete the two comment markers around the next line:
+![JEIS dashboard](docs/img/dashboard.png)
+-->
 
 ---
 
