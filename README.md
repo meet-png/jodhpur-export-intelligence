@@ -2,7 +2,7 @@
 
 > **An end-to-end, self-refreshing analytics pipeline for Jodhpur's furniture & guar-gum export cluster — built entirely on free public data.**
 
-📊 **[Interactive dashboard](#-live-dashboard)** &nbsp;·&nbsp; 📓 **[Notebook tour](notebooks/)** &nbsp;·&nbsp; 🏗 **[Architecture & design rationale](docs/ARCHITECTURE.md)** &nbsp;·&nbsp; 🔁 **[Weekly-refresh workflow](.github/workflows/weekly-refresh.yml)**
+📊 **[▶ Live interactive dashboard](https://jodhpur-export-intelligence-ashjm6at7ctsyq65hwwqxk.streamlit.app/)** &nbsp;·&nbsp; 📓 **[Notebook tour](notebooks/)** &nbsp;·&nbsp; 🏗 **[Architecture & design rationale](docs/ARCHITECTURE.md)** &nbsp;·&nbsp; 🔁 **[Weekly-refresh workflow](.github/workflows/weekly-refresh.yml)**
 
 ---
 
@@ -10,14 +10,15 @@
 
 A 5-tab interactive dashboard ([`streamlit_app.py`](streamlit_app.py)) lets you explore every headline finding — including a live slider that re-forecasts guar demand under different US rig-count scenarios.
 
-<!-- After deploying on Streamlit Community Cloud, replace the line below with:
-[![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://YOUR-APP.streamlit.app) -->
+[![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://jodhpur-export-intelligence-ashjm6at7ctsyq65hwwqxk.streamlit.app/)
 
-**▶ Live link:** _deploying — runs locally right now in one command:_
+**▶ Live: <https://jodhpur-export-intelligence-ashjm6at7ctsyq65hwwqxk.streamlit.app/>**
+
+Or run it locally in one command:
 
 ```bash
-pip install -r requirements.txt
-streamlit run streamlit_app.py        # opens at http://localhost:8501
+pip install -r requirements.txt      # 5 packages — slim dashboard deps
+streamlit run streamlit_app.py       # opens at http://localhost:8501
 ```
 
 The app reads only the version-controlled CSVs in `data/processed/` — **no database or API key needed**, so it behaves identically locally and on Streamlit Cloud.
